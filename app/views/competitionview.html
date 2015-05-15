@@ -1,0 +1,68 @@
+<div class="container">
+  <div class="form-group">
+    <input type="text" ng-model="competition.name" ng-change="competition.$save()" placeholder="Name" class="form-control input-lg">
+  </div>
+</div>
+
+<tabset>
+
+  <tab heading="Participants">
+    <div class="container competition-page">
+      <div class="competition row">
+        <div class="col-xs-1">
+        </div>
+        <div class="col-md-9 col-xs-11">
+          <form class="competition-forms" ng-repeat="participant in participants">
+            <div class="input-group">
+              <div class="input-group-addon">{{ $index + 1 }}</div>
+              <input type="text" ng-model="participant.name" ng-change="participants.$save(participant)" placeholder="Name" class="form-control">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </tab>
+
+  <tab heading="Games">
+    <div class="container competition-page">
+      <div class="competition row">
+        <div class="col-xs-1">
+        </div>
+        <div class="col-md-9 col-xs-11">
+          <div ng-repeat="round in games">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <td colspan="3"><strong>Round {{ $index + 1 }}</strong></td>
+                  <td colspan="3" class="text-center"><strong>Result</strong></td>
+                </tr>
+              </thead>
+              <tbody>
+                  <tr ng-repeat="game in round">
+                    <td class="col-xs-2">{{ participants[game.player1.participantId].name }}</td>
+                    <td class="text-center">&mdash;</td>
+                    <td class="col-xs-2">{{ participants[game.player2.participantId].name }}</td>
+                    <td class="col-xs-2">
+                      <input type="number" class="form-control" ng-model="game.player1.points" ng-change="games.$save(round)">
+                    </td>
+                    <td class="text-center">
+                      &mdash;
+                    </td>
+                    <td class="col-xs-2">
+                      <input type="number" class="form-control" ng-model="game.player2.points" ng-change="games.$save(round)">
+                    </td>
+                  </tr>
+              </tbody>
+            </table>
+            <hr />
+          </div>
+        </div>
+      </div>
+    </div>
+  </tab>
+
+  <tab heading="Standings">
+
+  </tab>
+
+</tabset>

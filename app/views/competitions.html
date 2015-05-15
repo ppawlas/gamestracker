@@ -1,0 +1,39 @@
+<div class="container competition-page">
+  <div class="competition row">
+    <div class="col-xs-1">
+    </div>
+    <div class="col-md-9 col-xs-11">
+      <div class="competition-forms">
+
+        <h2>New competition</h2>
+
+        <form ng-submit="createCompetition()">
+          <input type="text" ng-model="newCompetition.name" placeholder="Name" class="form-control"><br>
+          <input type="number" ng-model="newCompetition.participantsNumber" placeholder="Number of participants" class="form-control"><br>
+          <input type="submit" value="Create" class="btn btn-primary" />
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <hr />
+  </div>
+
+  <div class="competition row" ng-repeat="competition in competitions">
+    <div class="col-xs-1">
+    </div>
+    <div class="col-md-9 col-xs-11">
+
+      <div class="info">
+        {{ competition.name }}
+      </div>
+      <div>
+        <span>created by {{ competition.creator }}</span>
+        &mdash;
+        <a ui-sref="competition({competitionId: competition.$id})">details</a>
+        <a ng-click="deleteCompetition(competition)">delete</a>
+      </div>
+    </div>
+  </div>
+</div>
