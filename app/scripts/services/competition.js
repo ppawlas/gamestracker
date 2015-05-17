@@ -1,6 +1,6 @@
 'use strict';
 
-app.factory('Competition', function (FIREBASE_URL, $firebaseObject, $firebaseArray) {
+app.factory('Competition', function (FIREBASE_URL, $firebaseObject, $firebaseArray, $q) {
   var ref = new Firebase(FIREBASE_URL);
   var competitions = $firebaseArray(ref.child('competitions'));
 
@@ -37,20 +37,22 @@ app.factory('Competition', function (FIREBASE_URL, $firebaseObject, $firebaseArr
       return $firebaseObject(ref.child('competitions').child(competitionId));
     },
     delete: function (competition) {
-      return competitions.$remove(competition).then(function(competitionRef) {
-        function removeDependentObject(parentName) {
-          var obj = $firebaseObject(ref.child(parentName).child(competitionRef.key()));
-          obj.$remove();
-        }
+      function removeDependentObject(parentName) {
+        return $firebaseObject(ref.child(parentName).child(competition.$id)).$remove();
+      }
 
-        var userCompetition = $firebaseObject(
-          ref.child('user_competitions').child(competition.creatorUID).child(competitionRef.key())
-        );
-        userCompetition.$remove();
+      $q.all([
+        removeDependentObject('participants'),
+        removeDependentObject('standings'),
+        removeDependentObject('games'),
 
-        removeDependentObject('participants');
-        removeDependentObject('standings');
-        removeDependentObject('games');
+        $firebaseObject(ref
+          .child('user_competitions')
+          .child(competition.creatorUID)
+          .child(competition.$id)
+        ).$remove()
+      ]).then(function() {
+        return competitions.$remove(competition);
       });
     },
     dependencies: function(name, competitionId) {
