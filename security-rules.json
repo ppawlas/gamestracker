@@ -18,7 +18,9 @@
         },
         "games": {
           ".read": true,
-          ".write": true
+          "$competitionId": {
+            ".write": "auth != null && root.child('competitions').child($competitionId).child('creatorUID').val() === auth.uid"
+          }
         },
         "participants": {
           ".read": true,
@@ -32,7 +34,9 @@
         },
         "standings": {
           ".read": true,
-          ".write": true
+          "$competitionId": {
+            ".write": "auth != null && root.child('competitions').child($competitionId).child('creatorUID').val() === auth.uid"
+          }
         },
         "user_competitions": {
           ".read": true,
