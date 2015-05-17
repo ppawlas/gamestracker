@@ -1,0 +1,10 @@
+{
+  "firebase": "gamestracker",
+  "public": "dist",
+  "ignore": [
+    "firebase.json",
+    "**/.*",
+    "**/node_modules/**"
+  ],
+  "rules": "security-rules.json"
+}

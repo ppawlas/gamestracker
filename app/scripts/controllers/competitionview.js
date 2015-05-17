@@ -10,6 +10,14 @@ app.controller('CompetitionViewCtrl', function($scope, $stateParams, Competition
   $scope.standings = Competition.standings($stateParams.competitionId);
   $scope.updateStandings = Competition.updateStandings;
 
+  $scope.noAuth = function() {
+    return $scope.user.uid !== $scope.competition.creatorUID;
+  };
+
+  $scope.pauseGame = function(game) {
+    return game.player1 === undefined || game.player2 === undefined;
+  };
+
   $scope.getName = function(standing) {
     return $scope.participants[standing.participantId].name;
   };

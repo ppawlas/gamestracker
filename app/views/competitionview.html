@@ -1,6 +1,6 @@
 <div class="container">
   <div class="form-group">
-    <input type="text" ng-model="competition.name" ng-change="competition.$save()" placeholder="Name" class="form-control input-lg">
+    <input type="text" ng-model="competition.name" ng-change="competition.$save()" placeholder="Name" class="form-control input-lg" ng-disabled="noAuth()">
   </div>
 </div>
 
@@ -15,8 +15,9 @@
           <form class="competition-forms" ng-repeat="participant in participants">
             <div class="input-group">
               <div class="input-group-addon">{{ $index + 1 }}</div>
-              <input type="text" ng-model="participant.name" ng-change="participants.$save()" placeholder="Name" class="form-control">
+              <input type="text" ng-model="participant.name" ng-change="participants.$save()" placeholder="Name" class="form-control" ng-disabled="noAuth()">
             </div>
+            <br />
           </div>
         </div>
       </div>
@@ -43,13 +44,13 @@
                     <td class="text-center">&mdash;</td>
                     <td class="col-xs-2">{{ participants[game.player2.participantId].name }}</td>
                     <td class="col-xs-2">
-                      <input type="number" class="form-control" ng-model="game.player1.points" ng-change="games.$save().then(updateStandings(games, competition))">
+                      <input type="number" class="form-control" ng-model="game.player1.points" ng-change="games.$save().then(updateStandings(games, competition))" ng-disabled="noAuth() || pauseGame(game)">
                     </td>
                     <td class="text-center">
                       &mdash;
                     </td>
                     <td class="col-xs-2">
-                      <input type="number" class="form-control" ng-model="game.player2.points" ng-change="games.$save().then(updateStandings(games, competition))">
+                      <input type="number" class="form-control" ng-model="game.player2.points" ng-change="games.$save().then(updateStandings(games, competition))" ng-disabled="noAuth() || pauseGame(game)">
                     </td>
                   </tr>
               </tbody>

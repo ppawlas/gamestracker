@@ -16,8 +16,8 @@ app.factory('Auth', function (FIREBASE_URL, $firebaseObject, $firebaseAuth) {
         battleTag: user.battleTag
       };
 
-      var profileRef = $firebaseObject(ref.child('profile'));
-      profileRef[user.uid] = profile;
+      var profileRef = $firebaseObject(ref.child('profile').child(user.uid));
+      profileRef.$value = profile;
       return profileRef.$save();
     },
     login: function (user) {

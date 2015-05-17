@@ -62,6 +62,11 @@ var app = angular
         controller: 'CompetitionCtrl'
       })
 
+      .state('/.create', {
+          url: 'create',
+          templateUrl: 'views/newcompetition.html'
+      })
+
       ;
 
   });
