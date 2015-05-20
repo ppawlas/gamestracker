@@ -61,21 +61,53 @@ app.factory('Competition', function (FIREBASE_URL, $firebaseObject, $firebaseArr
     standings: function(competitionId) {
       return $firebaseArray(ref.child('standings').child(competitionId));
     },
-    updateStandings: function(games, competition) {
-      var newStandings = createStandings(competition.participantsNumber);
-      games.forEach(function(round) {
-        round.forEach(function(game) {
-          if (
-            (game.player1 && game.player1.points !== undefined) &&
-            (game.player2 && game.player2.points !== undefined)
-          ) {
-            updateGameStandings(newStandings, game);
-          }
+    updateStandings: function(game, competitionId) {
+      function addPlayerStandings(participantId, playerStandings) {
+        var playerStandingsRef = $firebaseObject(ref
+          .child('standings')
+          .child(competitionId)
+          .child(participantId)
+          .child('games')
+          .child(game.gameId)
+        );
+        playerStandingsRef.$value = playerStandings;
+        return playerStandingsRef.$save();
+      }
+
+      function updatePlayerStandings(participantId) {
+        var playerStandingsRef = $firebaseObject(ref
+          .child('standings')
+          .child(competitionId)
+          .child(participantId)
+        );
+        playerStandingsRef.$loaded()
+          .then(function(playerStandings) {
+            var total = sumPlayerStandings(playerStandings);
+            var totalRef = $firebaseObject(ref
+              .child('standings')
+              .child(competitionId)
+              .child(participantId)
+              .child('total')
+            );
+            totalRef.$value = total;
+            return totalRef.$save();
+          });
+      }
+
+      if (
+        (game.player1 && game.player1.points !== undefined) &&
+        (game.player2 && game.player2.points !== undefined)
+      ) {
+        var gameStandings = getGameStandings(game.id, game.player1, game.player2);
+
+        $q.all([
+          addPlayerStandings(game.player1.participantId, gameStandings.player1),
+          addPlayerStandings(game.player2.participantId, gameStandings.player2)
+        ]).then(function() {
+          updatePlayerStandings(game.player1.participantId);
+          updatePlayerStandings(game.player2.participantId);
         });
-      });
-      var standingsRef = $firebaseObject(ref.child('standings').child(competition.$id));
-      standingsRef.$value = newStandings;
-      standingsRef.$save();
+      }
     }
   };
 
@@ -124,6 +156,7 @@ app.factory('Competition', function (FIREBASE_URL, $firebaseObject, $firebaseArr
       var roundRobinTables = getRoundRobinTables(participantsNumber, round);
       for (var game = 0; game < (Math.ceil(participantsNumber) / 2); game++) {
         games[round][game] = {
+          gameId: 'r' + round + 'g' + game,
           player1: {participantId: roundRobinTables[0][game]},
           player2: {participantId: roundRobinTables[1][game]},
         };
@@ -132,62 +165,82 @@ app.factory('Competition', function (FIREBASE_URL, $firebaseObject, $firebaseArr
     return games;
   }
 
-  function getClearStandings() {
-    return {
-      pl: 0,  // played
-      w: 0,   // won
-      d: 0,   // draw
-      l: 0,   // lost
-      pf: 0,  // points for
-      pa: 0,  // points against
-      diff: 0,// points difference
-      pts: 0  // points
-    };
-  }
-
   function createStandings(participantsNumber) {
     var standings = {};
     for (var i = 0; i < participantsNumber; i++) {
-      standings[i] = getClearStandings();
-      standings[i].participantId = i;
+      standings[i] = {
+        participantId: i,
+          total: {
+          pl: 0,
+          w: 0,
+          l: 0,
+          d: 0,
+          pf: 0,
+          pa: 0,
+          diff: 0,
+          pts: 0
+        },
+        games: {}
+      };
     }
     return standings;
   }
 
-  function updateGameStandings(previousStandings, game) {
-    function updatePlayerStandings(playerStandings, player, opponent) {
-      function getResult(player, opponent) {
-        if (player.points > opponent.points) { return 1; }
-        if (player.points === opponent.points) { return 0; }
-        if (player.points < opponent.points) { return -1; }
-      }
+  function sumPlayerStandings(playerStandings) {
+    var total = {};
+    Object.keys(playerStandings.total).forEach(function(key) {
+      total[key] = Object.keys(playerStandings.games).reduce(function(previous, game) {
+        return previous + playerStandings.games[game][key];
+      }, 0);
+    });
+    return total;
+  }
 
-      function getPoints(result) {
-        if (result === 1) { return 3; }
-        if (result === 0) { return 1; }
-        if (result === -1) { return 0; }
-      }
-
-      var result = getResult(player, opponent);
-      playerStandings.pl++;
-      playerStandings.w += (result === 1 ? 1 : 0);
-      playerStandings.l += (result === -1 ? 1 : 0);
-      playerStandings.d += (result === 0 ? 1 : 0);
-      playerStandings.pf += player.points;
-      playerStandings.pa += opponent.points;
-      playerStandings.diff += (player.points - opponent.points);
-      playerStandings.pts += getPoints(result);
+  function getGameStandings(gameId, player1, player2) {
+    function getResult(player1, player2) {
+      if (player1.points > player2.points) { return 1; }
+      if (player1.points === player2.points) { return 0; }
+      if (player1.points < player2.points) { return -1; }
     }
 
-    updatePlayerStandings(
-      previousStandings[game.player1.participantId],
-      game.player1, game.player2
-    );
+    function getPoints(result) {
+      if (result === 1) { return 3; }
+      if (result === 0) { return 1; }
+      if (result === -1) { return 0; }
+    }
 
-    updatePlayerStandings(
-      previousStandings[game.player2.participantId],
-      game.player2, game.player1
-    );
+    var gameStandings = {
+      gameId: gameId,
+      player1: {},
+      player2: {}
+    };
+    var result = getResult(player1, player2);
+
+    gameStandings.player1.pl = 1;
+    gameStandings.player2.pl = 1;
+
+    gameStandings.player1.w = (result === 1 ? 1 : 0);
+    gameStandings.player2.w = (result === 1 ? 0 : 1);
+
+    gameStandings.player1.l = (result === -1 ? 1 : 0);
+    gameStandings.player2.l = (result === -1 ? 0 : 1);
+
+    gameStandings.player1.d = (result === 0 ? 1 : 0);
+    gameStandings.player2.d = (result === 0 ? 1 : 0);
+
+    gameStandings.player1.pf = player1.points;
+    gameStandings.player2.pf = player2.points;
+
+    gameStandings.player1.pa = player2.points;
+    gameStandings.player2.pa = player1.points;
+
+    gameStandings.player1.diff = player1.points - player2.points;
+    gameStandings.player2.diff = player2.points - player1.points;
+
+    gameStandings.player1.pts = getPoints(result);
+    gameStandings.player2.pts = getPoints(-1 * result);
+
+    return gameStandings;
   }
 
   return Competition;

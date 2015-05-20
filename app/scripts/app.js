@@ -22,7 +22,7 @@ var app = angular
     'ui.bootstrap',
     'firebase'
   ])
-  .constant('FIREBASE_URL', 'https://gamestracker.firebaseio.com/')
+  .constant('FIREBASE_URL', 'https://gamestracker-dev.firebaseio.com/')
   .config(function ($stateProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise('/');
 

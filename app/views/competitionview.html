@@ -44,13 +44,13 @@
                     <td class="text-center">&mdash;</td>
                     <td class="col-xs-2">{{ participants[game.player2.participantId].name }}</td>
                     <td class="col-xs-2">
-                      <input type="number" class="form-control" ng-model="game.player1.points" ng-change="games.$save().then(updateStandings(games, competition))" ng-disabled="noAuth() || pauseGame(game)">
+                      <input type="number" class="form-control" ng-model="game.player1.points" ng-change="games.$save().then(updateStandings(game, competition.$id))" ng-disabled="noAuth() || pauseGame(game)">
                     </td>
                     <td class="text-center">
                       &mdash;
                     </td>
                     <td class="col-xs-2">
-                      <input type="number" class="form-control" ng-model="game.player2.points" ng-change="games.$save().then(updateStandings(games, competition))" ng-disabled="noAuth() || pauseGame(game)">
+                      <input type="number" class="form-control" ng-model="game.player2.points" ng-change="games.$save().then(updateStandings(game, competition.$id))" ng-disabled="noAuth() || pauseGame(game)">
                     </td>
                   </tr>
               </tbody>
@@ -83,16 +83,16 @@
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="standing in standings | orderBy:['-pts', getName]">
+              <tr ng-repeat="standing in standings | orderBy:['-total.pts', getName]">
                 <td class="col-xs-1">{{ getName(standing) }}</td>
-                <td class="col-xs-1">{{ standing.pl }}</td>
-                <td class="col-xs-1">{{ standing.w }}</td>
-                <td class="col-xs-1">{{ standing.d }}</td>
-                <td class="col-xs-1">{{ standing.l }}</td>
-                <td class="col-xs-1">{{ standing.pf }}</td>
-                <td class="col-xs-1">{{ standing.pa }}</td>
-                <td class="col-xs-1">{{ standing.diff }}</td>
-                <td class="col-xs-1">{{ standing.pts }}</td>
+                <td class="col-xs-1">{{ standing.total.pl }}</td>
+                <td class="col-xs-1">{{ standing.total.w }}</td>
+                <td class="col-xs-1">{{ standing.total.d }}</td>
+                <td class="col-xs-1">{{ standing.total.l }}</td>
+                <td class="col-xs-1">{{ standing.total.pf }}</td>
+                <td class="col-xs-1">{{ standing.total.pa }}</td>
+                <td class="col-xs-1">{{ standing.total.diff }}</td>
+                <td class="col-xs-1">{{ standing.total.pts }}</td>
               </tr>
             </tbody>
           </table>
