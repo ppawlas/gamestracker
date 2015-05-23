@@ -1,46 +1,50 @@
 {
     "rules": {
-        "competitions": {
-          ".read": true,
+      "cards": {
+        ".read": true,
+        ".write": true
+      },
+      "competitions": {
+        ".read": true,
 
-          "$id": {
-            ".write": "(auth != null && !data.exists()) || data.child('creatorUID').val() === auth.uid",
-            ".validate": "newData.hasChildren(['creator', 'creatorUID', 'name', 'participantsNumber'])",
-            "name": {
-              ".validate": "newData.isString()"
-            },
-            "participantsNumber": {
-              ".validate": "newData.isNumber() && newData.val() > 1 && newData.val() < 25"
-            }
-
+        "$id": {
+          ".write": "(auth != null && !data.exists()) || data.child('creatorUID').val() === auth.uid",
+          ".validate": "newData.hasChildren(['creator', 'creatorUID', 'name', 'participantsNumber'])",
+          "name": {
+            ".validate": "newData.isString()"
+          },
+          "participantsNumber": {
+            ".validate": "newData.isNumber() && newData.val() > 1 && newData.val() < 25"
           }
 
-        },
-        "games": {
-          ".read": true,
-          "$competitionId": {
-            ".write": "auth != null && root.child('competitions').child($competitionId).child('creatorUID').val() === auth.uid"
-          }
-        },
-        "participants": {
-          ".read": true,
-          "$competitionId": {
-            ".write": "auth != null && root.child('competitions').child($competitionId).child('creatorUID').val() === auth.uid"
-          }
-        },
-        "profile": {
-          ".read": true,
-          ".write": true
-        },
-        "standings": {
-          ".read": true,
-          "$competitionId": {
-            ".write": "auth != null && root.child('competitions').child($competitionId).child('creatorUID').val() === auth.uid"
-          }
-        },
-        "user_competitions": {
-          ".read": true,
-          ".write": true
         }
+
+      },
+      "games": {
+        ".read": true,
+        "$competitionId": {
+          ".write": "auth != null && root.child('competitions').child($competitionId).child('creatorUID').val() === auth.uid"
+        }
+      },
+      "participants": {
+        ".read": true,
+        "$competitionId": {
+          ".write": "auth != null && root.child('competitions').child($competitionId).child('creatorUID').val() === auth.uid"
+        }
+      },
+      "profile": {
+        ".read": true,
+        ".write": true
+      },
+      "standings": {
+        ".read": true,
+        "$competitionId": {
+          ".write": "auth != null && root.child('competitions').child($competitionId).child('creatorUID').val() === auth.uid"
+        }
+      },
+      "user_competitions": {
+        ".read": true,
+        ".write": true
+      }
     }
 }
