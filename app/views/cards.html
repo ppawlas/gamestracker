@@ -1,0 +1,106 @@
+<div class="row">
+  <div class="col-xs-2">
+    <label>Name</label>
+    <input type="text" ng-model="search.name" placeholder="Name" class="form-control">
+    <label>Class</label>
+    <select
+      ng-model="search.playerClass"
+      ng-options="card.playerClass as card.playerClass for card in cards | unique:'playerClass'"
+      class="form-control"
+    >
+    </select>
+    <label>Type</label>
+    <button class="btn btn-default btn-xs" type="button" ng-click="clearSearch('type')">
+      <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+    </button>
+    <select
+      ng-model="search.type"
+      ng-options="card.type as card.type for card in cards | unique:'type'"
+      class="form-control"
+    >
+    </select>
+    <label>Set</label>
+    <button class="btn btn-default btn-xs" type="button" ng-click="clearSearch('set')">
+      <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+    </button>
+    <select
+      ng-model="search.set"
+      ng-options="card.set as card.set for card in cards | unique:'set'"
+      class="form-control"
+    >
+    </select>
+    <label>Rarity</label>
+    <button class="btn btn-default btn-xs" type="button" ng-click="clearSearch('rarity')">
+      <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+    </button>
+    <select
+      ng-model="search.rarity"
+      ng-options="card.rarity as card.rarity for card in cards | unique:'rarity'"
+      class="form-control"
+    >
+    </select>
+    <label>Cost</label>
+    <input type="text" ng-model="search.cost" placeholder="Cost" class="form-control">
+
+  </div>
+
+  <div class="col-xs-8">
+
+    <div class="row">
+      <div class="col-xs-4">
+        <div class="pagination">
+          <button class="btn btn-primary btn-sm" type="button" ng-click="predicate = 'name'; reverse=!reverse">
+            <span class="glyphicon {{ reversedGlyph() }}" aria-hidden="true" ng-show="predicate === 'name'"></span> name
+          </button>
+          <button class="btn btn-primary btn-sm" type="button" ng-click="predicate = 'cost'; reverse=!reverse">
+            <span class="glyphicon {{ reversedGlyph() }}" aria-hidden="true" ng-show="predicate === 'cost'"></span> cost
+          </button>
+        </div>
+      </div>
+      <div class="col-xs-8">
+        <dir-pagination-controls max-size="5" class="pull-right"></dir-pagination-controls>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12">
+        <span
+          dir-paginate="card in cards | filter:search | orderBy:predicate:reverse | itemsPerPage: 9"
+        >
+
+          <div class="card">
+            <img class="card-img {{ disabledCard(card) }}"
+            tooltip-template="'views/cardTooltipTemplate.html'"
+            ng-src="http://wow.zamimg.com/images/hearthstone/cards/enus/medium/{{card.id}}.png"
+            ng-click="add(card)"
+            ng-right-click="remove(card)"
+           />
+           <span class="badge" ng-show="card.count > 0">{{ card.count }}</span>
+          </div>
+
+        </span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-4">
+      </div>
+      <div class="col-xs-8">
+        <dir-pagination-controls max-size="5" class="pull-right"></dir-pagination-controls>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="col-xs-2">
+    {{ deckSize() }} / {{ deckLimit }}
+    <button class="btn btn-primary btn-sm" type="button" ng-click="reset()">
+      <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> reset
+    </button>
+    <div ng-repeat="card in cards | filter:chosen | orderBy:cost">
+      <span ng-click="add(card)" ng-right-click="remove(card)">
+        <b class="card-chosen {{ rarityClass(card) }}">{{ card.name }}</b> x {{ card.count }}
+      </span>
+    </div>
+  </div>
+</div>

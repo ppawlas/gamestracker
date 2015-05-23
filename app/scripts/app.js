@@ -20,7 +20,9 @@ var app = angular
     'ngTouch',
     'ui.router',
     'ui.bootstrap',
-    'firebase'
+    'firebase',
+    'angularUtils.directives.dirPagination',
+    'ui.utils'
   ])
   .constant('FIREBASE_URL', 'https://gamestracker-dev.firebaseio.com/')
   .config(function ($stateProvider, $urlRouterProvider) {
@@ -65,6 +67,12 @@ var app = angular
       .state('/.create', {
           url: 'create',
           templateUrl: 'views/newcompetition.html'
+      })
+
+      .state('cards', {
+        url: '/cards',
+        templateUrl: 'views/cards.html',
+        controller: 'CardsCtrl'
       })
 
       ;

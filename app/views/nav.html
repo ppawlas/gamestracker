@@ -12,6 +12,9 @@
 
   <!-- Collect the nav links, forms, and other content for toggling -->
   <div ng-controller="NavCtrl" class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav">
+      <li><a ui-sref="cards">Cards</a></li>
+    </ul>
     <ul class="nav navbar-nav navbar-right">
       <li ng-show="signedIn()">
         <p class="navbar-text">{{ user.profile.battleTag }}</p>

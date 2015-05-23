@@ -1,0 +1,26 @@
+div.card {
+  display: inline;
+}
+
+img.card-img.disabled {
+  opacity: 0.5;
+}
+
+b.card-chosen.Free {
+  color: #7f8c8d!important;
+}
+b.card-chosen.Common {
+  color: #FFF!important;
+}
+
+b.card-chosen.Rare {
+  color: #198EFF!important;
+}
+
+b.card-chosen.Epic {
+  color: #AB48EE!important
+}
+
+b.card-chosen.Legendary {
+  color: #F07000!important;
+}
