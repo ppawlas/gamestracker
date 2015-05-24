@@ -24,7 +24,7 @@ var app = angular
     'angularUtils.directives.dirPagination',
     'ui.utils'
   ])
-  .constant('FIREBASE_URL', 'https://gamestracker-dev.firebaseio.com/')
+  .constant('FIREBASE_URL', 'https://gamestracker.firebaseio.com/')
   .config(function ($stateProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise('/');
 
@@ -69,10 +69,15 @@ var app = angular
           templateUrl: 'views/newcompetition.html'
       })
 
-      .state('cards', {
-        url: '/cards',
-        templateUrl: 'views/cards.html',
-        controller: 'CardsCtrl'
+      .state('deckbuilder', {
+        url: '/deckbuilder',
+        templateUrl: 'views/deckbuilder.html',
+        controller: 'DeckbuilderCtrl',
+        resolve: {
+          cards: function(Cards) {
+            return Cards.all.$loaded();
+          }
+        }
       })
 
       ;

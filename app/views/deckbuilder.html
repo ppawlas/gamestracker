@@ -1,14 +1,26 @@
 <div class="row">
+  <div class="col-xs-2"></div>
+  <div class="col-xs-8">
+    <div class="btn-group">
+        <label class="btn btn-primary" ng-model="playerClass" btn-radio="'Druid'" uncheckable>Druid</label>
+        <label class="btn btn-primary" ng-model="playerClass" btn-radio="'Hunter'" uncheckable>Hunter</label>
+        <label class="btn btn-primary" ng-model="playerClass" btn-radio="'Mage'" uncheckable>Mage</label>
+        <label class="btn btn-primary" ng-model="playerClass" btn-radio="'Paladin'" uncheckable>Paladin</label>
+        <label class="btn btn-primary" ng-model="playerClass" btn-radio="'Priest'" uncheckable>Priest</label>
+        <label class="btn btn-primary" ng-model="playerClass" btn-radio="'Rogue'" uncheckable>Rogue</label>
+        <label class="btn btn-primary" ng-model="playerClass" btn-radio="'Shaman'" uncheckable>Shaman</label>
+        <label class="btn btn-primary" ng-model="playerClass" btn-radio="'Warlock'"uncheckable >Warlock</label>
+        <label class="btn btn-primary" ng-model="playerClass" btn-radio="'Warrior'" uncheckable>Warrior</label>
+    </div>
+  </div>
+  <div class="col-xs-2"></div>
+</div>
+<div class="row">
   <div class="col-xs-2">
     <label>Name</label>
     <input type="text" ng-model="search.name" placeholder="Name" class="form-control">
-    <label>Class</label>
-    <select
-      ng-model="search.playerClass"
-      ng-options="card.playerClass as card.playerClass for card in cards | unique:'playerClass'"
-      class="form-control"
-    >
-    </select>
+    <label>Description</label>
+    <input type="text" ng-model="search.text" placeholder="Description" class="form-control">
     <label>Type</label>
     <button class="btn btn-default btn-xs" type="button" ng-click="clearSearch('type')">
       <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
@@ -39,6 +51,16 @@
       class="form-control"
     >
     </select>
+    <label>Race</label>
+    <button class="btn btn-default btn-xs" type="button" ng-click="clearSearch('race')">
+      <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+    </button>
+    <select
+      ng-model="search.race"
+      ng-options="card.race as card.race for card in cards | unique:'race'"
+      class="form-control"
+    >
+    </select>
     <label>Cost</label>
     <input type="text" ng-model="search.cost" placeholder="Cost" class="form-control">
 
@@ -55,6 +77,9 @@
           <button class="btn btn-primary btn-sm" type="button" ng-click="predicate = 'cost'; reverse=!reverse">
             <span class="glyphicon {{ reversedGlyph() }}" aria-hidden="true" ng-show="predicate === 'cost'"></span> cost
           </button>
+          <button class="btn btn-primary btn-sm" type="button" ng-click="predicate = 'playerClass'; reverse=!reverse">
+            <span class="glyphicon {{ reversedGlyph() }}" aria-hidden="true" ng-show="predicate === 'playerClass'"></span> class
+          </button>
         </div>
       </div>
       <div class="col-xs-8">
@@ -65,7 +90,7 @@
     <div class="row">
       <div class="col-xs-12">
         <span
-          dir-paginate="card in cards | filter:search | orderBy:predicate:reverse | itemsPerPage: 9"
+          dir-paginate="card in cards | filter:classFilter | filter:search | orderBy:predicate:reverse | itemsPerPage: 9"
         >
 
           <div class="card">
@@ -93,14 +118,24 @@
   </div>
 
   <div class="col-xs-2">
+    <form ng-submit="createDeck()" ng-show="signedIn()">
+      <input type="text" ng-model="deck.name" placeholder="Name" class="form-control"><br>
+      <button class="btn btn-primary" type="submit">
+        <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span> Create
+      </button>
+    </form>
+
+    <hr />
     {{ deckSize() }} / {{ deckLimit }}
     <button class="btn btn-primary btn-sm" type="button" ng-click="reset()">
       <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> reset
     </button>
-    <div ng-repeat="card in cards | filter:chosen | orderBy:cost">
+    <div ng-repeat="card in cards | filter:chosen | orderBy:'cost'">
       <span ng-click="add(card)" ng-right-click="remove(card)">
         <b class="card-chosen {{ rarityClass(card) }}">{{ card.name }}</b> x {{ card.count }}
       </span>
     </div>
+    <hr />
+    Cost: {{ deckCost() }}
   </div>
 </div>
